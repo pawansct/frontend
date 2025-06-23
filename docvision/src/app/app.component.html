@@ -1,0 +1,210 @@
+<!-- Header -->
+<!-- <mat-toolbar class="header-toolbar"> -->
+<div class="top-header">
+  <!-- Logo -->
+  <div class="brand d-flex align-items-center">
+    <mat-icon class="brand-icon me-2">visibility</mat-icon>
+    <span class="brand-text">DocVision</span>
+  </div>
+
+  <!-- Camera Icon -->
+  <input type="file" accept="image/*" capture="environment" hidden #cameraInput (change)="onCameraCapture($event)" />
+<button mat-icon-button (click)="cameraInput.click()" class="camera-btn">
+  <mat-icon>photo_camera</mat-icon>
+</button>
+
+  <!-- Language Selector -->
+  <div class="language-selector d-flex align-items-center">
+    <mat-icon class="me-2 text-muted">translate</mat-icon>
+    <mat-form-field appearance="outline" class="language-field">
+      <mat-select [(value)]="selectedLanguage">
+        <mat-option *ngFor="let lang of languages" [value]="lang.label">
+          {{ lang.label }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+</div>
+
+
+<!-- </mat-toolbar> -->
+
+<!-- Main Content -->
+<div class="main-content">
+  <div class="container">
+    <!-- Hero Section -->
+   <!-- Hero Section -->
+<div class="hero-section text-center mb-5">
+  <h1 class="hero-title">
+    Extract Text from Images <br />
+    <span class="highlight">in Seconds</span>
+  </h1>
+  <p class="hero-subtitle text-muted mb-4">
+    Upload any image or document and get clean, editable text instantly. Perfect for
+    digitizing receipts, invoices, handwritten notes, and more.
+  </p>
+
+  <!-- Feature Badges -->
+  <div class="features d-flex justify-content-center flex-wrap gap-3">
+    <div class="feature-badge">
+      <mat-icon class="me-1">bolt</mat-icon> Lightning Fast
+    </div>
+    <div class="feature-badge">
+      <mat-icon class="me-1">shield</mat-icon> 100% Private
+    </div>
+    <div class="feature-badge">
+      <mat-icon class="me-1">translate</mat-icon> Multi-language
+    </div>
+  </div>
+</div>
+
+
+    <!-- Main Cards Section -->
+    <div class="row g-4">
+      <!-- Upload Image Card -->
+      <div class="col-lg-6">
+        <mat-card class="upload-card h-100">
+          <mat-card-header>
+            <mat-card-title class="card-title">
+              <mat-icon class="me-2">cloud_upload</mat-icon>
+              Upload Image
+            </mat-card-title>
+          </mat-card-header>
+
+          <mat-card-content class="upload-content">
+            <!-- Drag & Drop Zone -->
+            <div class="drop-zone"
+                 (dragover)="onDragOver($event)"
+                 (dragleave)="onDragLeave($event)"
+                 (drop)="onDrop($event)"
+                 [class.processing]="isProcessing"
+                 (click)="chooseFile()">
+
+              <div class="drop-zone-content text-center">
+                <mat-icon class="upload-icon mb-3">cloud_upload</mat-icon>
+                <h5 class="drop-title mb-2">Drop your image here</h5>
+                <p class="drop-subtitle text-muted mb-3">or click to browse files</p>
+
+                <!-- Loading Spinner -->
+                <!-- <div *ngIf="isProcessing" class="processing-spinner">
+                  <mat-spinner diameter="40"></mat-spinner>
+                  <p class="mt-2 text-muted">Processing image...</p>
+                </div> -->
+              </div>
+            </div>
+
+            <!-- Choose File Button -->
+            <div class="text-center mt-4">
+              <button mat-raised-button
+                      color="primary"
+                      class="choose-file-btn"
+                      (click)="chooseFile()"
+                      [disabled]="isProcessing">
+                <mat-icon class="me-2">attach_file</mat-icon>
+                Choose File
+              </button>
+
+              <!-- Hidden File Input -->
+              <input type="file"
+                     id="fileInput"
+                     class="d-none"
+                     accept="image/*"
+                     (change)="onFileSelected($event)">
+            </div>
+
+            <!-- File Info -->
+            <div *ngIf="selectedFile" class="file-info mt-3 p-3 bg-light rounded">
+              <div class="d-flex align-items-center">
+                <mat-icon class="me-2 text-success">check_circle</mat-icon>
+                <div>
+                  <strong>{{ selectedFile.name }}</strong>
+                  <small class="text-muted d-block">
+                    {{ (selectedFile.size / 1024 / 1024).toFixed(2) }} MB
+                  </small>
+                </div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <!-- Extracted Text Card -->
+      <div class="col-lg-6">
+        <mat-card class="text-card h-100">
+          <mat-card-header>
+            <mat-card-title class="card-title">
+              <mat-icon class="me-2">text_fields</mat-icon>
+              Extracted Text
+            </mat-card-title>
+
+            <!-- Action Buttons -->
+            <div class="card-actions" *ngIf="extractedText">
+              <button mat-icon-button
+                      matTooltip="Copy text"
+                      (click)="copyText()">
+                <mat-icon>content_copy</mat-icon>
+              </button>
+              <button mat-icon-button
+                      matTooltip="Download text"
+                      (click)="downloadText()">
+                <mat-icon>download</mat-icon>
+              </button>
+              <button mat-icon-button
+                      matTooltip="Clear text"
+                      (click)="clearText()">
+                <mat-icon>clear</mat-icon>
+              </button>
+            </div>
+          </mat-card-header>
+
+          <mat-card-content class="text-content">
+            <!-- Empty State -->
+            <div *ngIf="!extractedText && !isProcessing" class="empty-state text-center">
+              <mat-icon class="empty-icon mb-3">text_fields</mat-icon>
+              <p class="text-muted">Upload an image to extract text</p>
+            </div>
+
+            <!-- Processing State -->
+            <div *ngIf="isProcessing" class="processing-state text-center">
+              <mat-spinner diameter="40"></mat-spinner>
+              <p class="mt-3 text-muted">Extracting text from image...</p>
+            </div>
+
+            <!-- Extracted Text -->
+            <div *ngIf="extractedText" class="extracted-text">
+            <textarea class="form-control text-area"
+                      placeholder="Extracted text will appear here..."
+                      [value]="extractedText"
+                      rows="15"
+                      readonly>
+           </textarea>
+      </div>
+
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="footer mt-5">
+  <div class="container">
+    <mat-divider class="mb-4"></mat-divider>
+    <div class="row align-items-center">
+      <div class="col-md-6">
+        <div class="footer-brand d-flex align-items-center">
+          <mat-icon class="brand-icon me-2">visibility</mat-icon>
+          <span class="text-muted">© 2025 DocVision</span>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="footer-links text-md-end">
+          <a href="#" class="footer-link me-3">Privacy</a>
+          <a href="#" class="footer-link me-3">Contact</a>
+          <a href="#" class="footer-link">Terms</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
