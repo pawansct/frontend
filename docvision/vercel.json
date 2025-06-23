@@ -1,0 +1,5 @@
+{
+  "buildCommand": "ng build --configuration=production",
+  "outputDirectory": "dist/docvision",
+  "installCommand": "npm install"
+}
