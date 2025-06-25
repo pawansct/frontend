@@ -1,5 +1,10 @@
 {
+  "buildCommand": "ng build --configuration production",
+  "outputDirectory": "dist/docvision",
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
   ]
 }
